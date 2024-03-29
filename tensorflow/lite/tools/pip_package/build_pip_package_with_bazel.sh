@@ -65,9 +65,11 @@ case "${TENSORFLOW_TARGET}" in
   armhf)
     BAZEL_FLAGS="--config=elinux_armhf
       --copt=-march=armv7-a --copt=-mfpu=neon-vfpv4
-      --copt=-O3 --copt=-fno-tree-pre --copt=-fpermissive
+      --copt=-O3 --copt=-fno-tree-pre
       --define tensorflow_mkldnn_contraction_kernel=0
-      --define=raspberry_pi_with_neon=true"
+      --define=raspberry_pi_with_neon=true
+      --define=tflite_with_xnnpack=false
+      --define=tflite_kernel_use_xnnpack=false"
     ;;
   rpi0)
     BAZEL_FLAGS="--config=elinux_armhf
@@ -79,10 +81,15 @@ case "${TENSORFLOW_TARGET}" in
   aarch64)
     BAZEL_FLAGS="--config=elinux_aarch64
       --define tensorflow_mkldnn_contraction_kernel=0
+      --define tflite_pip_with_flex=true
+      --define tflite_with_xnnpack=true
+      --define xnnpack_force_float_precision=fp16
       --copt=-O3"
     ;;
   native)
-    BAZEL_FLAGS="--copt=-O3 --copt=-march=native"
+    BAZEL_FLAGS="--copt=-O3 --copt=-march=native
+    --define tflite_with_xnnpack=true
+    --define xnnpack_force_float_precision=fp16"
     ;;
   *)
     BAZEL_FLAGS="--copt=-O3"

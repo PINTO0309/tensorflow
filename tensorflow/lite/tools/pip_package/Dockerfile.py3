@@ -29,6 +29,9 @@ RUN apt-get update && \
       curl \
       wget \
       unzip \
+      python-is-python3 \
+      python3-launchpadlib \
+      python3-pip \
       git && \
     apt-get clean
 
@@ -39,7 +42,7 @@ RUN wget https://github.com/bazelbuild/bazelisk/releases/download/v1.15.0/bazeli
 # Install Python packages.
 RUN dpkg --add-architecture armhf
 RUN dpkg --add-architecture arm64
-RUN yes | add-apt-repository ppa:deadsnakes/ppa
+RUN add-apt-repository ppa:deadsnakes/ppa
 RUN apt-get update && \
     apt-get install -y \
       python$PYTHON_VERSION \
@@ -50,11 +53,20 @@ RUN apt-get update && \
       libpython$PYTHON_VERSION-dev:armhf \
       libpython$PYTHON_VERSION-dev:arm64
 RUN ln -sf /usr/bin/python$PYTHON_VERSION /usr/bin/python3
-RUN curl -OL https://bootstrap.pypa.io/get-pip.py
-RUN python3 get-pip.py
-RUN rm get-pip.py
-RUN pip3 install --upgrade pip
-RUN pip3 install numpy~=$NUMPY_VERSION setuptools pybind11
+# RUN curl -OL https://bootstrap.pypa.io/get-pip.py
+# RUN python3 get-pip.py
+# RUN rm get-pip.py
+
+# Ubuntu22.04
+# RUN pip install --upgrade pip
+# Bookwarm+
+RUN pip install --upgrade pip --break-system-packages
+
+# Ubuntu22.04
+# RUN pip install numpy~=$NUMPY_VERSION setuptools pybind11
+# Bookwarm+
+RUN pip install numpy~=$NUMPY_VERSION setuptools pybind11 --break-system-packages
+
 RUN ln -sf /usr/include/python$PYTHON_VERSION /usr/include/python3
 RUN ln -sf /usr/local/lib/python$PYTHON_VERSION/dist-packages/numpy/core/include/numpy /usr/include/python3/numpy
 RUN curl -OL https://github.com/Kitware/CMake/releases/download/v3.16.8/cmake-3.16.8-Linux-x86_64.sh
